@@ -32,10 +32,11 @@ const userSchema = new Schema({
     }],
     rol: {
         type: String,
-        enum: ['admin', 'customer', 'dealer']
+        enum: ['admin', 'customer', 'dealer'],
+        required: true
     },
     created_at: {
-        type: Date
+        type: String
     }
 });
 

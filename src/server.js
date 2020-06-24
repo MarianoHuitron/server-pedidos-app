@@ -9,7 +9,7 @@ require('./database');
 // Settings
 app.set('port', process.env.PORT || 4000);
 app.use(morgan('dev'));
-
+app.use(express.json());
 
 // Routes
 app.use('/user', require('./routes/userRoutes'));
