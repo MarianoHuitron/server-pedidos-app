@@ -1,5 +1,5 @@
 const User = require('../models/userModel');
-
+const jwt = require('jsonwebtoken');
 
 // CREATE USER
 function newUser(req, res) {
@@ -24,8 +24,43 @@ function newUser(req, res) {
 }
 
 
+// FUNCTION AUTHENTICATE
+async function auth(req, res, next) {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    User.findOne({email: email})
+        .select('name email rol password')
+        .exec((err, user) => {
+            console.log(user)
+            if(user == null) return res.status(422).send({errors: {email: {properties: {message: 'Usuario no encontrado'}}}});
+
+            if(!user.verifyPassword(password)) return res.status(422).send({errors: {password: {properties: {message: 'Contraseña incorrecta'}}}});
+
+            const payload = {
+                sub: user._id,
+                name: user.name,
+                rol: user.rol
+            };
+
+            jwt.sign({payload}, process.env.SECRET_KEY, {expiresIn: '30d'}, (err, token) => {
+                res.status(200).send({token});
+            }); 
+            
+        });
+
+}
+
+function x(req, res) {
+    res.send('Validate');
+}
+
+
+
 module.exports = {
-    newUser
+    newUser,
+    auth,
+    x
 }
 
 
