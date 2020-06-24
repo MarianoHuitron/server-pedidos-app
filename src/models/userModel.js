@@ -39,4 +39,25 @@ const userSchema = new Schema({
     }
 });
 
+
+// Encrypt password
+
+userSchema.pre('save', function(next) {
+    bcrypt.genSalt(10).then(salts => {
+        bcrypt.hash(this.password, salts).then(hash => {
+            this.password = hash;
+            next();
+        }).catch(error => next(error));
+    }).catch(error => next(error));
+});
+
+
+// Verify password
+
+userSchema.methods.verifyPassword = function(password) {
+    const verify = bcrypt.compareSync(password, this.password);
+    return verify;
+}
+
+
 module.exports = mongoose.model('user', userSchema);
