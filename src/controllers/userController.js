@@ -1,5 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const token = require('../middlewares/jwt');
+const { use } = require('../routes/userRoutes');
 
 // CREATE USER
 function newUser(req, res) {
@@ -21,6 +23,23 @@ function newUser(req, res) {
 
         res.status(200).send(doc);
     })
+}
+
+
+// CREATE ADRESS
+async function createAdress(req, res) {
+    const payload = token.decodeToken(req.token);
+    const userId = payload.payload.sub;
+    const adress = req.body;
+    adress.id = new Date().toISOString();
+
+    const user = await User.findById(userId);
+    user.adress.push(adress);
+
+    const updated = await user.updateOne(user);
+
+    res.status(200).send({message: 'OK'});
+    
 }
 
 
@@ -60,7 +79,7 @@ function x(req, res) {
 module.exports = {
     newUser,
     auth,
-    x
+    createAdress
 }
 
 
