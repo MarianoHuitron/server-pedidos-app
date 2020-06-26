@@ -21,7 +21,7 @@ const userSchema = new Schema({
     phone: {
         type: String
     },
-    adress: [{
+    address: [{
         id: {type: String},
         street: {type: String},
         number: {type: String},
