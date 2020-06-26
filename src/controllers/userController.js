@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const token = require('../middlewares/jwt');
-const { use } = require('../routes/userRoutes');
+
 
 // CREATE USER
 function newUser(req, res) {
