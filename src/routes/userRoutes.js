@@ -12,7 +12,4 @@ router.get('/get-address', verifyToken, getAddresses);
 
 router.put('/update-address/:address', verifyToken, updateAddress)
 
-
-
-
 module.exports = router;
