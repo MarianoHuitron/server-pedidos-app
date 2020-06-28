@@ -12,4 +12,8 @@ router.get('/get-address', verifyToken, getAddresses);
 
 router.put('/update-address/:address', verifyToken, updateAddress)
 
+router.get('/', (req, res) => {
+    res.send('hello')
+})
+
 module.exports = router;
