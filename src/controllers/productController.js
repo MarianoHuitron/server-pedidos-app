@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
     destination: path.join(__dirname, '../public/uploads'),
     filename: (req, file, cb) => {
         imagen = Date.now() + '-' + file.originalname;
-        imagen.replace('jpg', 'jpeg');
+        imagen = imagen.replace('jpg', 'jpeg');
         cb(null, imagen);
     }
 });
