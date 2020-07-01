@@ -1,6 +1,14 @@
 const Product = require('../models/productModel');
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('cloudinary');
+const fs = require('fs-extra');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 let imagen;
 
@@ -22,12 +30,15 @@ const uploadImage = multer({
 
 // CREATE PRODUCT
 function createProduct(req, res) {
+    
     // upluoad image at the server
-    uploadImage(req, res, (err) => {
+    uploadImage(req, res, async (err) => {
         if (err) {
             err.message = 'The file is so heavy for my service';
             return res.send(err);
         }
+        // upload image Cloudinary
+        const result = await cloudinary.v2.uploader.upload(req.file.path)
 
         // Save data on mongo
         const nDate = new Date().toLocaleString('en-US', {
@@ -37,14 +48,15 @@ function createProduct(req, res) {
         const product = new Product({
             name: req.body.name,
             price: req.body.price,
-            img_path: '/uploads/'+imagen,
+            img_path: result.secure_url,
             status: req.body.status,
             created_at: nDate
         });
 
-        product.save().then((respo) => {
-            res.status(200).send({status: 'OK'});
-        });
+        await product.save();
+        // delete image of the server
+        await fs.unlink(req.file.path)
+        res.status(200).send({status: 'OK'});
     });
 }
 
@@ -74,7 +86,7 @@ function updateStatus(req, res) {
 
 // TODO: UPDATE PRODUCT
 function updateProducto(req, res) {
-
+    
 }
 
 
