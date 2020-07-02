@@ -86,6 +86,39 @@ function updateStatus(req, res) {
 
 // TODO: UPDATE PRODUCT
 function updateProducto(req, res) {
+
+    Product.findById(req.params.idProd, (error, producto) => {
+        if(error) {
+            error.message = 'Producto no disponible';
+            return res.status(404).send(error);
+        }
+
+        uploadImage(req, res, async (err) => {
+            if (err) {
+                err.message = 'The file is so heavy for my service';
+                return res.send(err);
+            }
+    
+            let result;
+            if(req.file != undefined) {
+                // upload image Cloudinary
+                result = await cloudinary.v2.uploader.upload(req.file.path)
+                producto.img_path = result.secure_url;
+                await fs.unlink(req.file.path)
+            }
+
+            if(req.body.name !== 'null') producto.name = req.body.name;
+            if(req.body.price !== 'null') producto.price = req.body.price;
+            if(req.body.status !== 'null') producto.status = req.body.status;
+            
+            producto.updateOne(producto, (err, resp) => {
+                if(err) return res.status(403).send(err);
+
+                return res.status(200).send({status: 'OK'})
+            })
+        })
+    })
+
     
 }
 
@@ -100,7 +133,8 @@ module.exports = {
     createProduct,
     getProducts,
     getOneProduct,
-    updateStatus
+    updateStatus,
+    updateProducto
 };
 
 
