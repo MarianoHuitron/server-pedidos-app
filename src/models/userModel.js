@@ -30,6 +30,11 @@ const userSchema = new Schema({
         street2: {type: String},
         references: {type: String}
     }],
+    cart: [{
+        product: {type: Schema.Types.ObjectId, ref: 'product'},
+        cant: {type: Number},
+        subtotal: {type: Number}
+    }],
     rol: {
         type: String,
         enum: ['admin', 'customer', 'dealer'],

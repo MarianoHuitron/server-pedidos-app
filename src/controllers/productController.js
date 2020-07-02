@@ -84,7 +84,7 @@ function updateStatus(req, res) {
     });
 }
 
-// TODO: UPDATE PRODUCT
+
 function updateProducto(req, res) {
 
     Product.findById(req.params.idProd, (error, producto) => {

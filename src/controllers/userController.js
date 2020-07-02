@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Product = require('../models/productModel');
 const jwt = require('jsonwebtoken');
 const token = require('../middlewares/jwt');
 
@@ -77,6 +78,39 @@ async function updateAddress(req, res) {
     res.status(200).send(updated);
 }
 
+async function addCart(req, res) {
+    const payload = token.decodeToken(req.token);
+    const userId = payload.payload.sub;
+    const idProd = req.body.product;
+
+    const user = await User.findById(userId);
+    const producto = await Product.findById(idProd).select('price');
+    
+    
+    let exist = false;
+    // Valida si ya esta agregado dicho producto
+    user.cart.map(p => {
+        if(p.product == idProd) {
+            p.cant = p.cant + req.body.cant;
+            p.subtotal = p.cant * producto.price;
+            exist = true;
+        }
+    });
+
+    if(!exist) {
+        const element = {
+            product: idProd,
+            cant: req.body.cant,
+            subtotal: (req.body.cant * producto.price)
+        };
+        user.cart.push(element);
+    }
+    
+    await user.updateOne(user);
+    res.status(200).send({status: 'OK'})
+
+}
+
 
 // FUNCTION AUTHENTICATE
 async function auth(req, res, next) {
@@ -112,7 +146,8 @@ module.exports = {
     auth,
     createAddress,
     updateAddress,
-    getAddresses
+    getAddresses,
+    addCart
 }
 
 
