@@ -108,6 +108,25 @@ async function addCart(req, res) {
     
     await user.updateOne(user);
     res.status(200).send({status: 'OK'})
+}
+
+async function updateCantCart(req, res) {
+    const payload = token.decodeToken(req.token);
+    const userId = payload.payload.sub;
+    const idProd = req.body.product;
+
+    const user = await User.findById(userId)
+                            .populate({path: 'cart.product', select: 'price'});
+    
+    user.cart.map(p => {
+        if(p.product._id == idProd) {
+            p.cant = req.body.cant;
+            p.subtotal = (p.cant * p.product.price);
+        }
+    });
+    await user.updateOne(user);
+
+    res.status(200).send({status: 'OK'});
 
 }
 
@@ -147,7 +166,8 @@ module.exports = {
     createAddress,
     updateAddress,
     getAddresses,
-    addCart
+    addCart,
+    updateCantCart
 }
 
 
