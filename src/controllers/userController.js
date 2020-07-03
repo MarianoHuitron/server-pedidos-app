@@ -158,7 +158,7 @@ async function getCartProducts(req, res) {
 
     const cart = await User.findById(userId)
                             .select('cart -_id')
-                            .populate({path: 'cart.product', select: '-img_path -created_at'});
+                            .populate({path: 'cart.product', select: '-created_at'});
 
     res.status(200).send(cart.cart);
 
