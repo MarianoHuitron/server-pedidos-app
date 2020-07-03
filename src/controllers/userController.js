@@ -78,6 +78,7 @@ async function updateAddress(req, res) {
     res.status(200).send(updated);
 }
 
+// ADdD CART
 async function addCart(req, res) {
     const payload = token.decodeToken(req.token);
     const userId = payload.payload.sub;
@@ -110,6 +111,7 @@ async function addCart(req, res) {
     res.status(200).send({status: 'OK'})
 }
 
+// UPDATE CANT PRODUCT CART
 async function updateCantCart(req, res) {
     const payload = token.decodeToken(req.token);
     const userId = payload.payload.sub;
@@ -127,6 +129,38 @@ async function updateCantCart(req, res) {
     await user.updateOne(user);
 
     res.status(200).send({status: 'OK'});
+
+}
+
+// DELETE PRODUCT CART
+async function removeProdCart(req,res) {
+    const payload = token.decodeToken(req.token);
+    const userId = payload.payload.sub;
+    const idProd = req.params.idProd;
+
+    const user = await User.findById(userId);
+
+    let newData = user.cart.filter(p => { 
+        return p.product != idProd
+    });
+
+    user.cart = newData;
+
+    await user.updateOne(user);
+    res.status(200).send({status: 'OK'})
+}
+
+// GET CART PRODUCTS
+async function getCartProducts(req, res) {
+
+    const payload = token.decodeToken(req.token);
+    const userId = payload.payload.sub;
+
+    const cart = await User.findById(userId)
+                            .select('cart -_id')
+                            .populate({path: 'cart.product', select: '-img_path -created_at'});
+
+    res.status(200).send(cart.cart);
 
 }
 
@@ -167,7 +201,9 @@ module.exports = {
     updateAddress,
     getAddresses,
     addCart,
-    updateCantCart
+    updateCantCart,
+    removeProdCart,
+    getCartProducts
 }
 
 
