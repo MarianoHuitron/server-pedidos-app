@@ -23,8 +23,9 @@ router.get('/cart-get', verifyToken, getCartProducts);
 
 router.put('/update-address/:address', verifyToken, updateAddress)
 router.put('/cart-add/', verifyToken, addCart);
-router.put('/cart-update', verifyToken, updateCantCart)
-router.put('/cart-remove/:idProd', verifyToken, removeProdCart)
+router.put('/cart-update', verifyToken, updateCantCart);
+
+router.delete('/cart-remove/:idProd', verifyToken, removeProdCart)
 
 router.get('/', (req, res) => {
     res.send('hello')
