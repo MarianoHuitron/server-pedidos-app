@@ -54,7 +54,7 @@ function getAddresses(req, res) {
         .exec((err, address) => {
             console.log(address);
             if(err) return res.status(422).send(err);
-            res.status(200).send(address)
+            res.status(200).send(address.address)
         });
 }
 
