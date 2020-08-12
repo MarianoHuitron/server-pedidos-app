@@ -27,13 +27,7 @@ const staticOptions = {
 
 app.use(express.static(path.join(__dirname + '/public'), staticOptions));
 app.set('port', process.env.PORT || 4000);
-app.use(express.json({
-    verify: function(req, res, buf) {
-        if (req.originalUrl.startsWith('/webhook')) {
-            req.rawBody = buf.toString();
-        }
-    }
-}));
+app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
