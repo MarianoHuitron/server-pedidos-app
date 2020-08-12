@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const path = require('path');
 const mime = require('mime');
 const cors = require('cors');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 
 const app = express();
 
@@ -25,7 +27,13 @@ const staticOptions = {
 
 app.use(express.static(path.join(__dirname + '/public'), staticOptions));
 app.set('port', process.env.PORT || 4000);
-app.use(express.json());
+app.use(express.json({
+    verify: function(req, res, buf) {
+        if (req.originalUrl.startsWith('/webhook')) {
+            req.rawBody = buf.toString();
+        }
+    }
+}));
 app.use(express.urlencoded({extended: true}));
 
 
@@ -34,10 +42,11 @@ app.use(cors());
 
 
 
-
 // Routes
 app.use('/user', require('./routes/userRoutes'));
 app.use('/product', require('./routes/productRoutes'));
+app.use('/pedido', require('./routes/pedidoRoutes'));
+app.use('/webhook', require('./routes/pedidoRoutes'));
 
 
 // Server Listening
