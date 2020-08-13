@@ -30,7 +30,7 @@ async function createSession(req, res) {
         payment_method_types: ['card'],
         line_items: line_data,
         mode: 'payment',
-        success_url: process.env.DOMAIN + '/pago',  //TODO: ADD SESSION ID
+        success_url: `${process.env.DOMAIN}/pago/{CHECKOUT_SESSION_ID}`,  //TODO: ADD SESSION ID
         cancel_url: process.env.DOMAIN + '/domicilio',
     });
 
@@ -40,7 +40,7 @@ async function createSession(req, res) {
 
 async function webhookEvents(req, res) {
     let event = req.body;
-    console.log(event)
+    console.log
     switch(event.type) {
 
       case 'payment_intent.succeeded': 
@@ -57,6 +57,18 @@ async function webhookEvents(req, res) {
    
 }
 
+async function checkSession(req, res) {
+  const { sessionId } = req.params;
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.send(session);
+  } catch(err) {
+    res.send('error')
+  }
+ 
+} 
+
+
 
 
 
@@ -64,5 +76,6 @@ async function webhookEvents(req, res) {
 
 module.exports = {
     createSession,
-    webhookEvents
+    webhookEvents,
+    checkSession
 }

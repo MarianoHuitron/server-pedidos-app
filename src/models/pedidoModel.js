@@ -8,9 +8,7 @@ const pedidoSchema = new Schema({
         require: true
     }, 
     address: {
-        type: Schema.Types.ObjectId,
-        ref: 'user.address',
-        required: true
+        type: String,
     },
     info_products: [{
         product: {type: Schema.Types.ObjectId, ref: 'product'},
@@ -25,9 +23,15 @@ const pedidoSchema = new Schema({
         type: String,
         enum: ['pending', 'success', 'cancel']
     },
-    created_at: {
-        type: String,
-        required: true
+    session_id: {
+        type: String
     },
+    pay: {
+        type: Boolean
+    },
+    created_at: {
+        type: Date,
+        required: true
+    }
 
 })
