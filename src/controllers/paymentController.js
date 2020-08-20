@@ -1,13 +1,13 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Pedido = require('../models/pedidoModel');
+const PedidoController = require('./pedidoController');
 const token = require('../middlewares/jwt');
 
 async function createSession(req, res) {
     const payload = token.decodeToken(req.token);
     const userId = payload.payload.sub;
+    const address = req.body.address;
     const items = req.body.items;
     let line_data = [];
- 
 
     items.map(item => {
         const info = {
@@ -30,9 +30,11 @@ async function createSession(req, res) {
         payment_method_types: ['card'],
         line_items: line_data,
         mode: 'payment',
-        success_url: `${process.env.DOMAIN}/pago/{CHECKOUT_SESSION_ID}`,  //TODO: ADD SESSION ID
+        success_url: `${process.env.DOMAIN}/pago/{CHECKOUT_SESSION_ID}`, 
         cancel_url: process.env.DOMAIN + '/domicilio',
     });
+
+    PedidoController.createPedido(items,userId, address, session.id);
 
     res.json({session_id: session.id});
 }
@@ -61,6 +63,7 @@ async function checkSession(req, res) {
   const { sessionId } = req.params;
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    PedidoController.paySuccess(sessionId);
     res.send(session);
   } catch(err) {
     res.send('error')

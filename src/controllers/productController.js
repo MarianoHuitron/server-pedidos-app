@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const cloudinary = require('cloudinary');
 const fs = require('fs-extra');
+const jwt = require('../middlewares/jwt');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -62,7 +63,13 @@ function createProduct(req, res) {
 
 
 async function getProducts(req, res) {
-    const products = await Product.find();
+    const payload = jwt.decodeToken(req.token);
+    let products;
+    if(payload.payload.rol == 'customer') {
+         products = await Product.find({status: true});
+    } else {
+         products = await Product.find();
+    }
     return res.status(200).send(products);
 }
 
@@ -95,7 +102,7 @@ function updateProducto(req, res) {
 
         uploadImage(req, res, async (err) => {
             if (err) {
-                err.message = 'The file is so heavy for my service';
+                err.message = 'El archivo es demasiado grande';
                 return res.send(err);
             }
     
@@ -115,11 +122,9 @@ function updateProducto(req, res) {
                 if(err) return res.status(403).send(err);
 
                 return res.status(200).send({status: 'OK'})
-            })
-        })
-    })
-
-    
+            });
+        });
+    });
 }
 
 

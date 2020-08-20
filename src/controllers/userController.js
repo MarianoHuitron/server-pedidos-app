@@ -40,7 +40,16 @@ async function createAddress(req, res) {
     const updated = await user.updateOne(user);
 
     res.status(200).send({message: 'OK'});
-    
+}
+
+function getUsersAdmin(req, res) {
+    User.find({rol: 'admin'})
+    .select('-address -cart -password')
+    .exec((err, response) => {
+        if(err) return res.status(400).send({message: 'Error'});
+
+        return res.status(200).send(response);
+    });    
 }
 
 
@@ -189,7 +198,11 @@ async function auth(req, res, next) {
             }); 
             
         });
+}
 
+async function countCustomers(req, res) {
+    const customers = await User.find({rol: 'customer'}).countDocuments()
+    res.status(200).send({customers: customers});
 }
 
 
@@ -203,7 +216,9 @@ module.exports = {
     addCart,
     updateCantCart,
     removeProdCart,
-    getCartProducts
+    getCartProducts,
+    getUsersAdmin,
+    countCustomers
 }
 
 

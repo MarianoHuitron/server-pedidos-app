@@ -21,7 +21,7 @@ const pedidoSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'success', 'cancel']
+        enum: ['pending', 'deliver', 'success', 'cancel']
     },
     session_id: {
         type: String
@@ -35,3 +35,5 @@ const pedidoSchema = new Schema({
     }
 
 })
+
+module.exports = mongoose.model('pedido', pedidoSchema);

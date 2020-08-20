@@ -10,9 +10,11 @@ const {
     addCart, 
     updateCantCart,
     removeProdCart,
-    getCartProducts
+    getCartProducts,
+    getUsersAdmin,
+    countCustomers
 } = require('../controllers/userController');
-const { verifyToken } = require('../middlewares/jwt');
+const { verifyToken, isAdmin } = require('../middlewares/jwt');
 
 router.post('/create', newUser);
 router.post('/login', auth);
@@ -20,6 +22,8 @@ router.post('/create-address', verifyToken, createAddress);
 
 router.get('/get-address', verifyToken, getAddresses);
 router.get('/cart-get', verifyToken, getCartProducts);
+router.get('/users-admin', isAdmin, getUsersAdmin);
+router.get('/count', isAdmin, countCustomers);
 
 router.put('/update-address/:address', verifyToken, updateAddress)
 router.put('/cart-add/', verifyToken, addCart);
